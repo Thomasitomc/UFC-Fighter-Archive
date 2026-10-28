@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Fighter Archive</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+
+:root{--bg:#0b0b0c;--panel:#161618;--line:#2c2c30;--ink:#f4f2ee;--mute:#b4b1aa;--a:#e0161b;
+
+--h:'Anton','Impact','Arial Narrow',sans-serif;--b:'Archivo','Helvetica Neue',Arial,sans-serif;
+
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+*,*::before,*::after{box-sizing:inherit}
+
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--b)}
+
+body.lock{overflow:hidden}
+
+h1,h2,h3{font-family:var(--h);font-weight:400;text-transform:uppercase;margin:0;line-height:.95}
+
+p{margin:0 0 14px;max-width:62ch}
+
+#bar{position:fixed;top:0;left:0;height:4px;width:0;background:var(--a);z-index:30}
+
+.brand{position:fixed;left:4vw;top:18px;font:400 20px var(--h);letter-spacing:.12em;z-index:20}
+
+nav.side{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;z-index:20}
+
+nav.side button{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;gap:10px;color:var(--mute);font:800 11px var(--b);letter-spacing:.14em;text-transform:uppercase;padding:8px 0}
+
+nav.side i{width:14px;height:3px;background:var(--line);transition:width .25s,*background* .25s}
+
+nav.side span{display:none}
+
+nav.side button.on{color:var(--ink)}nav.side button.on i{width:36px;background:var(--a)}
+
+nav.side button:focus-visible,.btn:focus-visible,.x:focus-visible{outline:3px solid var(--a);outline-offset:3px}
+
+@media(min-width:861px){nav.side span{display:inline}}
+
+.f{min-height:100vh;min-height:100svh;scroll-snap-align:start;display:grid;grid-template-columns:1.1fr .9fr;align-items:end;gap:2vw;padding:90px 8vw 60px 6vw;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+
+.f .big{position:absolute;left:3vw;top:50%;font:400 clamp(160px,28vw,420px)/.8 var(--h);color:#141416;white-space:nowrap;pointer-events:none;will-change:transform}
+
+.f .txt{position:relative;z-index:3;grid-column:1;grid-row:1;min-width:0}
+
+.f .pt{grid-column:2;grid-row:1;min-width:0}
+
+.f h2{font-size:clamp(64px,11vw,170px)}
+
+.f h2 span{display:block}
+
+.nick{font:800 18px var(--b);letter-spacing:.24em;text-transform:uppercase;color:var(--a);margin:22px 0 4px}
+
+.meta{color:var(--mute)}
+
+.btn{all:unset;cursor:pointer;display:inline-block;position:relative;overflow:hidden;isolation:isolate;background:var(--ink);color:#0b0b0c;font:800 14px var(--b);letter-spacing:.16em;text-transform:uppercase;padding:18px 28px}
+
+.btn::before{content:"";position:absolute;inset:0;background:var(--a);transform:translateX(-101%);transition:transform .3s;z-index:-1}
+
+.btn:hover,.btn:focus-visible{color:#fff}.btn:hover::before,.btn:focus-visible::before{transform:none}
+
+.pt {
+  position: relative;
+  height: calc(100svh - 150px);
+  min-height: 420px;
+  width: 100%;
+}
+
+.pt img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right bottom;
+  z-index: 2;
+}
+
+.others{display:flex;gap:18px;flex-wrap:wrap;margin-top:34px}
+
+.others button{all:unset;cursor:pointer;font:800 12px var(--b);letter-spacing:.16em;text-transform:uppercase;color:var(--mute);border-bottom:2px solid transparent;padding:4px 0}
+
+.others button:hover{color:var(--ink);border-color:var(--a)}
+
+.dn{position:absolute;left:6vw;bottom:18px;z-index:3;font:800 11px var(--b);letter-spacing:.2em;color:var(--mute);text-transform:uppercase}
+
+.dn::after{content:"";display:block;width:2px;height:34px;background:var(--a);margin-top:6px;animation:dr 1.6s infinite}
+
+@keyframes dr{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+.arrows{position:fixed;left:4vw;bottom:20px;display:flex;gap:8px;z-index:20}
+
+.arrows button{all:unset;cursor:pointer;width:44px;height:44px;background:var(--ink);color:#0b0b0c;text-align:center;line-height:44px;font:800 18px var(--b)}
+
+.arrows button:hover{background:var(--a);color:#fff}
+
+/* profile overlay */
+
+#pro{position:fixed;inset:0;z-index:40;background:var(--bg);overflow-y:auto;transform:translateY(100%);visibility:hidden;transition:transform .5s cubic-bezier(.2,.7,.2,1),visibility 0s .5s}
+
+#pro.open{transform:none;visibility:visible;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+
+.top{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;justify-content:space-between;gap:10px;padding:14px 5vw;border-bottom:3px solid var(--a)}
+
+.top .btn{padding:12px 18px;font-size:12px}
+
+.pw{padding:0 5vw 80px;max-width:1200px;margin:0 auto}
+
+.pw section{padding:64px 0 0}
+
+.lb{font:800 12px var(--b);letter-spacing:.2em;text-transform:uppercase;color:var(--a);margin:0 0 12px}
+
+.pw h2{font-size:clamp(36px,5.5vw,64px);margin-bottom:26px}
+
+.hd h1{font-size:clamp(64px,11vw,150px);padding-top:50px}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+
+.facts div{padding:18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+.facts b{display:block;font:800 11px var(--b);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+
+.facts span{font:400 25px/1.15 var(--h);text-transform:uppercase}
+
+.rec big{font:400 clamp(80px,14vw,180px)/.9 var(--h)}
+
+.split{display:flex;height:44px;margin:10px 0}
+
+.split div{display:flex;align-items:center;padding-left:10px;font:800 12px var(--b);letter-spacing:.1em;overflow:hidden;white-space:nowrap;background:#4a4a50;color:#fff}
+
+.note{font-size:14px;color:var(--mute);border-left:4px solid var(--a);padding-left:14px;max-width:70ch;margin-top:22px}
+
+.st{display:grid;grid-template-columns:1fr 1fr;gap:0 5vw}
+
+.st dt{font:400 24px var(--h);text-transform:uppercase;margin-top:22px}.st dd{margin:4px 0 0;color:var(--mute)}
+
+.cb{display:grid;grid-template-columns:80px 1fr;gap:6px 24px;padding:24px 0;border-top:1px solid var(--line)}
+
+.cb .n{font:400 70px/.8 var(--h);color:var(--a)}
+
+.ch{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+
+.ch b{font:400 21px var(--h);text-transform:uppercase;background:var(--ink);color:#0b0b0c;padding:5px 12px}
+
+.ch i{font-style:normal;color:var(--a);font-weight:800}
+
+.cb p{margin:0;color:var(--mute)}
+
+.sw{display:grid;grid-template-columns:1fr 1fr}
+
+.sw>div{padding:30px}.sw .s{background:var(--ink);color:#0b0b0c}.sw .w{background:var(--panel)}
+
+.sw h3{font-size:40px;margin-bottom:12px}
+
+.sw h4{font:800 14px var(--b);letter-spacing:.08em;text-transform:uppercase;margin:16px 0 2px}
+
+.sw p{margin:0}.sw .s p{color:#333}.sw .w p{color:var(--mute)}
+
+table{width:100%;border-collapse:collapse}
+
+th,td{text-align:left;padding:16px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+
+th{font:800 11px var(--b);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+
+td.o{font:400 26px/1 var(--h);text-transform:uppercase}
+
+.res{font:800 12px var(--b);padding:3px 9px;background:var(--ink);color:#0b0b0c}.res.l{background:var(--a);color:#fff}
+
+.sr{display:grid;grid-template-columns:130px 1fr 36px;gap:14px;align-items:center;margin-bottom:12px;font:800 13px var(--b);letter-spacing:.12em;text-transform:uppercase}
+
+.sr .t{height:14px;background:var(--panel)}.sr .t div{height:100%;background:var(--a);width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+
+@media(max-width:860px){
+
+.f{grid-template-columns:1fr;padding:80px 6vw 90px}.f .txt,.f .pt{grid-column:1;grid-row:auto}.pt{order:-1;height:42vh;min-height:260px;width:100%}.pt img{object-position:center bottom}
+
+.st,.sw{grid-template-columns:1fr}.cb{grid-template-columns:1fr}.tw{overflow-x:auto}table{min-width:540px}
+
+nav.side{right:6px}.sr{grid-template-columns:92px 1fr 28px}.arrows{bottom:14px}}
+
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="bar"></div><div class="brand">FIGHTER ARCHIVE</div>
+
+<nav class="side" id="side" aria-label="Fighters"></nav>
+
+<div class="arrows"><button id="up" aria-label="Previous fighter">&uarr;</button><button id="dn" aria-label="Next fighter">&darr;</button></div>
+
+<main id="g"></main>
+
+<div id="pro" role="dialog" aria-modal="true" aria-label="Fighter profile"></div>
+
+
+
+<script>
+
+
+const VERIFIED = "October 27, 2026";
+
+const FIGHTERS = [
+
+{ id:"ilia-topuria", name:["Ilia","Topuria"], nickname:"El Matador", image: "./ilia-topuria.png", accent:"#e0161b",
+
+  nationality:"Spain and Georgia", weightClass:"Lightweight",
+
+  blurb:"A compact, heavy-handed boxer with a jiu-jitsu black belt. He pressures, counters and finishes early.",
+
+  identity:[["Born","Jan 21, 1997 (age 29)"],["Birthplace","Halle, Germany"],["Height","5 ft 7 in (170 cm)"],["Reach","69 in (176 cm)"],["Stance","Orthodox"],["Styles","Boxing, BJJ"]],
+
+  record:{w:17,l:1,d:0,ko:7,sub:8,dec:2,
+
+   titles:["Former UFC Featherweight Champion (beat Volkanovski, Feb 2024)","UFC Lightweight title (beat Oliveira, June 2025)"],
+
+   note:"Lost to Justin Gaethje on June 14, 2026 (corner stoppage TKO) per UFC.com Spanish edition and Sherdog data. Some sites still show 17-0, so confirm on ufc.com."},
+
+  style:[["Range and offense","Sits at mid range, then steps into the pocket behind feints. Tight right hands, left hooks and body shots."],["Defense","Shoulder rolls, head movement, high guard. Counters on the way out."],["Grappling","Takedowns are secondary, but he threatens to take the back or submit. 8 wins are by submission."],["Weapons vs overall style","His sharpest tools are the counter left hook and straight right. Overall he is a boxer with real submission skills."]],
+
+  combos:[["Jab","Cross","Left hook","The base three. The jab finds range, the cross pins the guard, the hook catches the turning head."],["Check hook","Cross","","A counter to a forward step. Resembles his finish of Volkanovski."],["Body shot","Head shot","","A body hook drops the guard before the same hand goes upstairs."],["Feint","Level change","Right hand","The takedown threat pulls the hands down, then the right lands over the top."]],
+
+  strengths:[["Counterpunching","Punishes entries, as in the Volkanovski finish."],["Finishing","15 of 17 wins came by stoppage."],["Submission threat","Gives his boxing a second layer."]],
+
+  weaknesses:[["Observed: dropped by a head kick","Hurt by Jai Herbert early before winning. A tendency, not a proven flaw."],["Observed: Gaethje loss","His first loss, in a single fight at lightweight."]],
+
+  fights:[["Alexander Volkanovski","UFC 298, Feb 2024","W","KO, Round 2","Won the featherweight title."],["Max Holloway","UFC 308, Oct 2024","W","KO, Round 3","First title defense against a durable striker."],["Charles Oliveira","UFC 317, June 2025","W","KO, Round 1","Won the lightweight title."],["Justin Gaethje","UFC Freedom 250, June 2026","L","TKO (corner stoppage)","His first professional loss."]],
+
+  ratings:{Striking:9,Power:9,Speed:8,Wrestling:7,Grappling:8,"Fight IQ":9,Cardio:8}},
+
+{ id:"dustin-poirier", name:["Dustin","Poirier"], nickname:"The Diamond", image: "./dustin-poirier.png", accent:"#e8a317",
+
+  nationality:"United States", weightClass:"Lightweight (retired)",
+
+  blurb:"A southpaw boxer built on volume, leg kicks and pocket exchanges. Retired in July 2025.",
+
+  identity:[["Born","Jan 19, 1989 (age 37)"],["Birthplace","Lafayette, Louisiana"],["Height","5 ft 9 in (175 cm)"],["Reach","72 in (183 cm)"],["Stance","Southpaw"],["Status","Retired, July 2025"]],
+
+  record:{w:30,l:10,d:0,nc:1,ko:null,sub:7,dec:null,
+
+   titles:["UFC Interim Lightweight Champion (beat Holloway, April 2019)","BMF title (beat Gaethje, July 2023)"],
+
+   note:"Record 30-10 with 1 no contest at retirement, per several outlets. Sources disagree on KO count (15 or 16), so the full method split is marked for verification."},
+
+  style:[["Range and offense","Lives in the pocket. Southpaw combinations to head and body, with calf and leg kicks to slow opponents."],["Defense","Durable, but takes damage when he trades. Takedown defense has been tested by elite wrestlers."],["Grappling","BJJ black belt who defends and scrambles well. He was submitted in both title losses to Khabib and Makhachev."],["Weapons vs overall style","His strongest tools are the left hand and leg kicks. Overall he is an all-action boxer who wins through output and grit."]],
+
+  combos:[["Jab","Left hand","Left hook","Standard southpaw chain. The lead hand sets up the left, then the hook cleans up."],["Calf kick","Left hand","","Leg kicks stiffen the opponent's base, then the left lands as they shift. Key in the McGregor rematch."],["Body shot","Head shot","","Wears down the guard before the head shot."],["Pocket exchange","Counter left","","He accepts trades and looks to land the cleaner shot."]],
+
+  strengths:[["Output and volume","Constant combination punching, as in his war with Holloway."],["Durability","Fought at the top for 14 years in the UFC."],["Leg kicks","The calf kick plan beat McGregor at UFC 257."]],
+
+  weaknesses:[["Observed: damage in exchanges","He was dropped twice by Holloway at UFC 318, though he also dropped Holloway."],["Observed: elite grapplers","Submission losses to Khabib and Makhachev in title fights."]],
+
+  fights:[["Max Holloway","UFC 236, April 2019","W","Decision","Won the interim lightweight title in a Fight of the Year contender."],["Conor McGregor","UFC 257, Jan 2021","W","TKO, Round 2","First man to knock out McGregor."],["Islam Makhachev","UFC 302, June 2024","L","Submission, Round 5","His last title shot."],["Max Holloway","UFC 318, July 2025","L","Decision","His retirement fight."]],
+
+  ratings:{Striking:8,Power:8,Speed:7,Wrestling:6,Grappling:7,"Fight IQ":8,Cardio:8}},
+
+{ id:"islam-makhachev", name:["Islam","Makhachev"], nickname:"The Eagle's Successor", image: "./islam-makhachev.png", accent:"#2e7cff",
+
+  nationality:"Russia (Dagestan)", weightClass:"Welterweight (former Lightweight champion)",
+
+  blurb:"A wrestling-first southpaw who chains takedowns, controls from the top and hunts submissions.",
+
+  identity:[["Born","Oct 27, 1991 (age 35)"],["Birthplace","Makhachkala, Dagestan"],["Height","5 ft 10 in (178 cm)"],["Reach","70.5 in (179 cm)"],["Stance","Southpaw"],["Styles","Sambo, wrestling, BJJ"]],
+
+  record:{w:29,l:1,d:0,ko:5,sub:13,dec:11,
+
+   titles:["Former UFC Lightweight Champion (beat Oliveira, Oct 2022)","UFC Welterweight Champion (beat Della Maddalena, Nov 2025)","Defended it vs Ian Machado Garry at UFC 330, Aug 2026"],
+
+   note:"Record 29-1 per UFC rankings data (via Kalshi) on Oct 20, 2026. KO and submission counts come from the same source; decisions are derived (29 minus 5 minus 13)."},
+
+  style:[["Range and offense","Strikes to set up takedowns. His southpaw jab and left hand serve as entries to the clinch."],["Grappling","Chain wrestling: if the first takedown fails he follows to the fence, the leg or the back."],["Top control","Heavy pressure, positional advancement, then forearm chokes and submissions."],["Weapons vs overall style","His best tool is the takedown chain. Overall he is a grappler whose striking exists to feed it."]],
+
+  combos:[["Jab","Cross","Level change","Punches raise the guard, then the level change gets the hips."],["Fence press","Single leg","Back take","Pins the opponent to the cage and follows the leg until it breaks."],["Takedown","Mount","Submission","Advances position patiently, then attacks chokes or arm locks."],["Feint","Left hand","","A feint to the legs pulls the hands down for the southpaw left."]],
+
+  strengths:[["Wrestling","Rarely stopped from getting the takedown he wants."],["Top control","Opponents struggle to get up once he settles in."],["Submission threat","13 wins by submission."],["Consistency","Set a UFC record 17 straight wins at UFC 330."]],
+
+  weaknesses:[["Observed: close fight against a mover","Volkanovski made their first fight close at UFC 284, though Makhachev won."],["Observed: only loss","Stopped by Adriano Martins in 2015 early in his career."]],
+
+  fights:[["Charles Oliveira","UFC 280, Oct 2022","W","Submission, Round 2","Won the lightweight title."],["Alexander Volkanovski","UFC 294, Oct 2023","W","KO, Round 1","A head kick finish of the featherweight king."],["Dustin Poirier","UFC 302, June 2024","W","Submission, Round 5","A title defense that tested his durability."],["Jack Della Maddalena","UFC 322, Nov 2025","W","Decision","Won the welterweight title in a new division."]],
+
+  ratings:{Striking:7,Power:6,Speed:7,Wrestling:10,Grappling:10,"Fight IQ":9,Cardio:9}},
+
+{ id:"conor-mcgregor", name:["Conor","McGregor"], nickname:"The Notorious",  image: "./conor-mcgregor.png", accent:"#1fa35a",
+
+  nationality:"Ireland", weightClass:"Welterweight (most recent fight)",
+
+  blurb:"A southpaw counter-striker built on lead-hand control, timing and a straight left that ended fights in seconds.",
+
+  identity:[["Born","July 14, 1988 (age 38)"],["Birthplace","Dublin, Ireland"],["Height","5 ft 9 in (175 cm)"],["Reach","74 in (188 cm)"],["Stance","Southpaw"],["Last fight","July 11, 2026"]],
+
+  record:{w:22,l:7,d:0,ko:19,sub:1,dec:2,
+
+   titles:["Former UFC Featherweight Champion (beat Aldo, Dec 2015)","Former UFC Lightweight Champion (beat Alvarez, Nov 2016), the first to hold two belts at once"],
+
+   note:"Record 22-7 after losing to Max Holloway at UFC 329 (TKO, Round 1, 1:09, July 11, 2026). The fight ended when McGregor suffered a leg injury."},
+
+  style:[["Range and offense","Controls distance with the lead hand and shin, then lands the straight left. Strong body and head kicks."],["Defense","Relies on movement and timing. Is vulnerable to takedowns and pressure grappling."],["Movement","Switches stance and uses angles to make opponents miss."],["Weapons vs overall style","His strongest tool is the left straight. Overall he is a counter-striker who wins by timing, not volume."]],
+
+  combos:[["Lead hand","Straight left","","Pawing and measuring, then the left down the middle. The shot that ended Aldo in 13 seconds."],["Counter left","","","He lets opponents come forward and meets them with the left as they enter."],["Switch stance","Kick","","Changing stance hides the lead leg, then the kick lands to the head or body."],["Body kick","Straight left","","The body kick pulls the elbow down, opening the left."]],
+
+  strengths:[["Straight left","19 of 22 wins came by knockout."],["Timing and precision","Measures range and lands first."],["Lead-hand control","Keeps opponents at the end of his reach."]],
+
+  weaknesses:[["Observed: grapplers","Submitted by Khabib and Diaz, tied to takedown and submission defense."],["Observed: injuries and layoff","Broke his leg against Poirier in 2021, then lost in 2026 after almost five years away."]],
+
+  fights:[["Jose Aldo","UFC 194, Dec 2015","W","KO, Round 1 (13 sec)","Won the featherweight title."],["Eddie Alvarez","UFC 205, Nov 2016","W","TKO, Round 2","Became a two-division champion."],["Dustin Poirier","UFC 257, Jan 2021","L","TKO, Round 2","First knockout loss in the UFC."],["Max Holloway","UFC 329, July 2026","L","TKO (injury), Round 1","His return after five years."]],
+
+  ratings:{Striking:9,Power:9,Speed:8,Wrestling:5,Grappling:5,"Fight IQ":8,Cardio:6}}
+
+];
+
+
+
+
+const $=s=>document.querySelector(s), g=$("#g"), pro=$("#pro"), side=$("#side");
+
+const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const rc=f=>{const r=f.record;return `${r.w}-${r.l}-${r.d}`+(r.nc?` (${r.nc} NC)`:"")};
+
+
+
+/* Gallery */
+
+g.innerHTML=FIGHTERS.map((f,i)=>`<section class="f" id="${f.id}" style="--a:${f.accent}">
+
+ <div class="big" aria-hidden="true">${f.name[1]}</div>
+
+ <div class="txt"><h2><span>${f.name[0]}</span><span>${f.name[1]}</span></h2>
+
+  <p class="nick">${f.nickname}</p><p class="meta">${f.nationality} | ${f.weightClass}</p><p>${f.blurb}</p>
+
+  <button class="btn" data-open="${i}">View fighter profile</button>
+
+  <div class="others">${FIGHTERS.map((o,j)=>j===i?"":`<button data-go="${j}">${o.name[1]}</button>`).join("")}</div></div>
+
+ <div class="pt"><img src="${f.image}" alt="${f.name.join(' ')}" onerror="this.style.display='none'"></div>
+
+ <div class="dn">Scroll</div></section>`).join("");
+
+side.innerHTML=FIGHTERS.map((f,i)=>`<button data-go="${i}" aria-label="${f.name.join(' ')}"><span>${f.name[1]}</span><i></i></button>`).join("");
+
+const secs=[...g.children], dots=[...side.children], bigs=[...document.querySelectorAll(".big")];
+
+let cur=0;
+
+const go=i=>secs[(i+secs.length)%secs.length].scrollIntoView({behavior:calm?"auto":"smooth"});
+
+document.addEventListener("click",e=>{
+
+ const a=e.target.closest("[data-go]"),o=e.target.closest("[data-open]");
+
+ if(a)go(+a.dataset.go); if(o)openPro(+o.dataset.open);
+
+});
+
+$("#up").onclick=()=>go(Math.max(0,cur-1)); $("#dn").onclick=()=>go(Math.min(secs.length-1,cur+1));
+
+function tick(){
+
+ const m=document.documentElement.scrollHeight-innerHeight;
+
+ $("#bar").style.width=(m>0?scrollY/m*100:0)+"%";
+
+ secs.forEach((s,i)=>{const r=s.getBoundingClientRect();
+
+  if(r.top<innerHeight*.5&&r.bottom>innerHeight*.5)cur=i;
+
+  if(!calm)bigs[i].style.transform=`translate3d(${-r.top*.18}px,-50%,0)`;});
+
+ dots.forEach((d,i)=>d.classList.toggle("on",i===cur));
+
+}
+
+addEventListener("scroll",tick,{passive:true});addEventListener("resize",tick);tick();
+
+
+
+/* Profile overlay */
+
+let openI=-1;
+
+function openPro(i){
+
+ const f=FIGHTERS[i],r=f.record,n=FIGHTERS.length; openI=i;
+
+ const meth=(v,l,c)=>v==null?`<div style="flex:1;border-left:2px solid var(--line)">${l}: verify</div>`:`<div style="flex:${v};${c||''}">${v} ${l}</div>`;
+
+ pro.style.setProperty("--a",f.accent);
+
+ pro.innerHTML=`<div class="top"><button class="btn x" data-close>&larr; Back to gallery</button>
+
+  <div><button class="btn x" data-nav="-1">&larr; ${FIGHTERS[(i+n-1)%n].name[1]}</button> <button class="btn x" data-nav="1">${FIGHTERS[(i+1)%n].name[1]} &rarr;</button></div></div>
+
+ <div class="pw">
+
+ <section class="hd"><p class="lb">Fighter dossier</p><h1>${f.name.join(" ")}</h1><p class="nick">${f.nickname}</p><p class="meta">${f.nationality} | ${f.weightClass}</p></section>
+
+ <section><p class="lb">A / Identity</p><h2>Identity</h2><div class="facts">${f.identity.map(([k,v])=>`<div><b>${k}</b><span>${v}</span></div>`).join("")}</div></section>
+
+ <section class="rec"><p class="lb">B / Career record</p><h2>Record</h2><big>${rc(f)}</big>
+
+  <div class="split">${meth(r.ko,"KO/TKO","background:var(--a);color:#fff")}${meth(r.sub,"SUB","background:#f4f2ee;color:#0b0b0c")}${meth(r.dec,"DEC")}</div>
+
+  <ul>${r.titles.map(t=>`<li>${t}</li>`).join("")}</ul><p class="note">${r.note} Verified ${VERIFIED}.</p></section>
+
+ <section><p class="lb">C / Fighting style</p><h2>How He Fights</h2><dl class="st">${f.style.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl></section>
+
+ <section><p class="lb">D / Combinations</p><h2>Combos</h2>${f.combos.map((c,j)=>`<div class="cb"><div class="n">${j+1}</div><div><div class="ch">${c.slice(0,3).filter(Boolean).map(s=>`<b>${s}</b>`).join("<i>&rarr;</i>")}</div><p>${c[3]}</p></div></div>`).join("")}
+
+  <p class="note">Illustrative analysis of visible style, not official signature moves.</p></section>
+
+ <section><p class="lb">E / Assessment</p><h2>Strengths and Weaknesses</h2><div class="sw"><div class="s"><h3>Strengths</h3>${f.strengths.map(([a,b])=>`<h4>${a}</h4><p>${b}</p>`).join("")}</div><div class="w"><h3>Weaknesses</h3>${f.weaknesses.map(([a,b])=>`<h4>${a}</h4><p>${b}</p>`).join("")}</div></div></section>
+
+ <section><p class="lb">F / Notable fights</p><h2>Key Fights</h2><div class="tw"><table><thead><tr><th>Opponent</th><th>Event</th><th>Result</th><th>Why it matters</th></tr></thead><tbody>${f.fights.map(x=>`<tr><td class="o">${x[0]}</td><td>${x[1]}</td><td><span class="res ${x[2]==='L'?'l':''}">${x[2]}</span> ${x[3]}</td><td>${x[4]}</td></tr>`).join("")}</tbody></table></div></section>
+
+ <section><p class="lb">G / Attributes</p><h2>Ratings</h2>${Object.entries(f.ratings).map(([k,v])=>`<div class="sr"><span>${k}</span><div class="t"><div data-w="${v*10}"></div></div><span>${v}</span></div>`).join("")}
+
+  <p class="note">Subjective 1 to 10 estimates, not official UFC statistics.</p></section></div>`;
+
+ pro.scrollTop=0; document.body.classList.add("lock"); pro.classList.add("open");
+
+ setTimeout(()=>pro.querySelectorAll("[data-w]").forEach(b=>b.style.width=b.dataset.w+"%"),calm?0:350);
+
+ history.replaceState(null,"","#"+f.id);
+
+}
+
+function closePro(){ if(openI<0)return; pro.classList.remove("open"); document.body.classList.remove("lock");
+
+ const t=secs[openI]; t.scrollIntoView({behavior:"auto"}); openI=-1; }
+
+pro.addEventListener("click",e=>{
+
+ if(e.target.closest("[data-close]"))closePro();
+
+ const n=e.target.closest("[data-nav]"); if(n)openPro((openI+ +n.dataset.nav+FIGHTERS.length)%FIGHTERS.length);
+
+});
+
+addEventListener("keydown",e=>{
+
+ if(e.key==="Escape")closePro();
+
+ if(e.altKey||e.ctrlKey||e.metaKey)return;
+
+ if(openI>=0){ if(e.key==="ArrowRight")openPro((openI+1)%FIGHTERS.length); if(e.key==="ArrowLeft")openPro((openI+FIGHTERS.length-1)%FIGHTERS.length); return; }
+
+ if(e.key==="ArrowDown"){e.preventDefault();go(Math.min(secs.length-1,cur+1));}
+
+ if(e.key==="ArrowUp"){e.preventDefault();go(Math.max(0,cur-1));}
+
+});
+
+</script>
+
+</body>
+
+</html>
